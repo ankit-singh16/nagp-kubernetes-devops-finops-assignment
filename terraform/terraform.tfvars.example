@@ -1,0 +1,14 @@
+region          = "us-east-1"
+name            = "nagp-assignment"
+cluster_version = "1.33"
+
+node_min_size     = 2
+node_desired_size = 2
+node_max_size     = 5
+
+node_instance_types = [
+  "t3.medium",
+  "t3a.medium",
+  "m5.large",
+  "m5a.large"
+]

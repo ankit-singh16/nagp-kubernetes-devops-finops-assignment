@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: nagp-app
+data:
+  01-seed.sql: |
+    CREATE TABLE IF NOT EXISTS wall_posts (
+      id         SERIAL PRIMARY KEY,
+      author     TEXT NOT NULL,
+      message    TEXT NOT NULL,
+      emoji      TEXT NOT NULL DEFAULT '👋',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    INSERT INTO wall_posts (author, message, emoji)
+    SELECT author, message, emoji
+    FROM (
+      VALUES
+        ('Ada',   'First commit to the cloud wall!',          '🚀'),
+        ('Linus', 'It compiles, ship it.',                    '🐧'),
+        ('Grace', 'Found a bug, it was an actual moth.',      '🐛'),
+        ('Kube',  'Pods come and pods go, the wall remains.', '☸️'),
+        ('Spot',  'Living on borrowed compute since boot.',   '💸'),
+        ('Argo',  'Synced and healthy.',                      '🔄'),
+        ('NAGP',  'Welcome to the assignment demo!',          '🎉')
+    ) AS seed(author, message, emoji)
+    WHERE NOT EXISTS (SELECT 1 FROM wall_posts);

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: records-api-config
+  namespace: nagp-app
+data:
+  DB_HOST: postgres.nagp-app.svc.cluster.local
+  DB_PORT: "5432"
+  DB_NAME: appdb
+  DB_USER: appuser
+  DB_POOL_MAX: "10"

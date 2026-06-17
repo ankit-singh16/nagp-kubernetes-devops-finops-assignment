@@ -1,0 +1,20 @@
+# Node
+app/node_modules/
+.npm-cache/
+npm-debug.log*
+
+# Terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/*.tfvars
+!**/terraform.tfvars.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local assignment reference material
+.reference/
