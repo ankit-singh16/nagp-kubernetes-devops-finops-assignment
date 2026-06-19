@@ -23,9 +23,9 @@ variable "vpc_cidr" {
 }
 
 variable "node_instance_types" {
-  description = "Instance types used by the Spot managed node group. Small nodes make node-level scaling easy to demonstrate."
+  description = "Instance types for the Spot managed node group. t3.large gives ~35 pods per node, enough for the whole platform to fit on the first node so Cluster Autoscaler can schedule and then grow the cluster. t3.small (~8 pods) deadlocks: the autoscaler itself stays Pending and can never add nodes."
   type        = list(string)
-  default     = ["t3.small", "t3a.small"]
+  default     = ["t3.large", "t3a.large"]
 }
 
 variable "node_min_size" {

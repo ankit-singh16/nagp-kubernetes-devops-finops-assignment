@@ -9,6 +9,11 @@ data "aws_availability_zones" "available" {
 locals {
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
 
+  # Seconds Helm waits for each release to become ready. The default 300s is too
+  # short when Cluster Autoscaler still has to bring up a node before the
+  # platform pods can schedule, which is what caused the earlier failed installs.
+  helm_timeout = 600
+
   tags = {
     Project     = var.name
     ManagedBy   = "terraform"
@@ -70,6 +75,10 @@ module "eks" {
     aws-ebs-csi-driver = {
       most_recent              = true
       service_account_role_arn = module.ebs_csi_irsa.arn
+    }
+    metrics-server = {
+      most_recent                 = true
+      resolve_conflicts_on_create = "OVERWRITE"
     }
   }
 
@@ -242,6 +251,11 @@ resource "helm_release" "aws_load_balancer_controller" {
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
 
+  atomic          = true
+  cleanup_on_fail = true
+  replace         = true
+  timeout         = local.helm_timeout
+
   set = [
     {
       name  = "clusterName"
@@ -279,6 +293,11 @@ resource "helm_release" "external_secrets" {
   namespace        = "external-secrets"
   create_namespace = true
 
+  atomic          = true
+  cleanup_on_fail = true
+  replace         = true
+  timeout         = local.helm_timeout
+
   set = [
     {
       name  = "serviceAccount.create"
@@ -304,14 +323,10 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   create_namespace = true
 
-  depends_on = [module.eks]
-}
-
-resource "helm_release" "metrics_server" {
-  name       = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server"
-  chart      = "metrics-server"
-  namespace  = "kube-system"
+  atomic          = true
+  cleanup_on_fail = true
+  replace         = true
+  timeout         = local.helm_timeout
 
   depends_on = [module.eks]
 }
@@ -321,6 +336,11 @@ resource "helm_release" "cluster_autoscaler" {
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
   namespace  = "kube-system"
+
+  atomic          = true
+  cleanup_on_fail = true
+  replace         = true
+  timeout         = local.helm_timeout
 
   set = [
     {

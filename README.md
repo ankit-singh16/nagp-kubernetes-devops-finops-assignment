@@ -5,7 +5,7 @@ This repository contains a complete EKS-based implementation for the Kubernetes 
 ## Deliverable Links
 
 - Code repository: `https://github.com/ankit-singh16/nagp-kubernetes-devops-finops-assignment`
-- Docker Hub image: `docker.io/ankitsingh16nagarro/nagp-records-api:1.1.0`
+- Docker Hub image: `docker.io/ankitsingh16nagarro/nagp-records-api:1.2.0`
 - Service API URL: the ALB DNS is provisioned fresh on every deploy, so it is not hard-coded here. Fetch the current URL with:
 
   ```bash
@@ -13,8 +13,6 @@ This repository contains a complete EKS-based implementation for the Kubernetes 
     -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
   # then open  http://<that-hostname>/  in a browser
   ```
-
-- Demo recording: `TODO: add OneDrive/Google Drive recording URL`
 
 ## Architecture
 
@@ -87,8 +85,8 @@ Update the image repository/tag to your Docker Hub account, then build and push:
 
 ```bash
 cd app
-docker build -t docker.io/ankitsingh16nagarro/nagp-records-api:1.1.0 .
-docker push docker.io/ankitsingh16nagarro/nagp-records-api:1.1.0
+docker build -t docker.io/ankitsingh16nagarro/nagp-records-api:<tag> .
+docker push docker.io/ankitsingh16nagarro/nagp-records-api:<tag>
 ```
 
 Update `k8s/app/api-deployment.yaml` with the pushed image tag before syncing with Argo CD.
