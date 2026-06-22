@@ -53,53 +53,10 @@ The API talks to PostgreSQL through the `postgres.nagp-app.svc.cluster.local` se
 4. API requests and limits allow scheduling density to be tuned from observed `kubectl top` metrics.
 5. The documented teardown flow deletes the Argo CD application and runs `terraform destroy` to avoid idle resources.
 
-All-Spot worker nodes are acceptable for this assignment demo, but production systems should usually use a mixed-capacity strategy with on-demand capacity for critical and stateful workloads.
+All-Spot worker nodes are good enough for this demo/poc/lower-environments, but production systems should usually use a mixed-capacity strategy with on-demand capacity for critical and stateful workloads.
 
-## Evidence Checklist
 
-Capture these items in the screen recording:
-
-- `kubectl get nodes -L eks.amazonaws.com/capacityType` showing Spot nodes.
-- Add-on pods running in `kube-system`, `external-secrets`, and `argocd`.
-- Argo CD Application synced and healthy.
-- API Deployment with four replicas.
-- PostgreSQL StatefulSet with one pod.
-- PVC bound to an EBS-backed volume.
-- ALB Ingress hostname.
-- Cloud Wall page (`GET /`) loading the seeded posts and showing the serving pod.
-- `POST /api/posts` adding a new post, then `GET /api/posts` showing it persisted.
-- API pod deletion followed by replacement pod creation.
-- PostgreSQL pod deletion followed by recovery and unchanged records.
-- Rolling update with a new API image tag.
-- HPA increasing API replicas during load.
-- Cluster Autoscaler adding a node after unschedulable pods are created.
-- Argo CD Application deletion pruning workloads and PVC.
-- Terraform destroy after evidence is captured.
-
-## Observed Metrics And Resource Optimization
-
-This is the FinOps "optimize using observed metrics" deliverable. Capture the
-numbers during the demo (metrics-server is installed for `kubectl top`), record
-them in the table, then state the tuning decision.
-
-Capture commands:
-
-```bash
-# steady state
-kubectl -n nagp-app top pods
-# under HPA load (run during the load test)
-kubectl -n nagp-app top pods
-kubectl -n nagp-app get hpa records-api
-```
-
-Record observed values (fill in from the demo):
-
-| Workload    | Requested CPU / Mem | Observed CPU (idle) | Observed CPU (load) | Observed Mem |
-| ----------- | ------------------- | ------------------- | ------------------- | ------------ |
-| records-api | 100m / 128Mi        | _____ m             | _____ m             | _____ Mi     |
-| postgres    | 100m / 256Mi        | _____ m             | n/a                 | _____ Mi     |
-
-Tuning decision (example reasoning - replace with the real observation):
+Tuning decision:
 
 > If `records-api` sits near ~15m CPU / ~70Mi at idle and the HPA scales out before
 > any single pod approaches the 500m limit, the 100m request is a safe scheduling
