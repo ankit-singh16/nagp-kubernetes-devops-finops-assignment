@@ -5,7 +5,7 @@ This repository contains a complete EKS-based implementation for the Kubernetes 
 ## Deliverable Links
 
 - Code repository: `https://github.com/ankit-singh16/nagp-kubernetes-devops-finops-assignment`
-- Docker Hub image: `docker.io/ankitsingh16nagarro/nagp-records-api:1.2.0`
+- Docker Hub image: `[docker.io/ankitsingh16nagarro/nagp-records-api:1.2.0](https://hub.docker.com/layers/ankitsingh16nagarro/nagp-records-api/1.2.0)`
 - Service API URL: the ALB DNS is provisioned fresh on every deploy, so it is not hard-coded here. Fetch the current URL with:
 
   ```bash
